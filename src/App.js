@@ -10,10 +10,28 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Llamada a la API antes de enviar el correo
+      const response = await fetch('https://woowup-079b50bd940f.herokuapp.com/auth/login', {
+        method: 'POST', // O 'POST', dependiendo de tu API
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ phone: '+593989870087', password : '12345678' }),
+      });
+
+      // Asegúrate de que la respuesta sea exitosa
+      if (!response.ok) {
+        throw new Error('Error en la consulta a la API');
+      }
+
+      const apiData = await response.json();
+      const token = apiData.token;
+
       const res = await fetch('https://woowup-079b50bd940f.herokuapp.com/email/send-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ to, subject, message }),
       });
