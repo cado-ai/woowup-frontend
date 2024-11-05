@@ -1,0 +1,36 @@
+name: Deploy React App to Heroku
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+            fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run build
+
+      - name: Deploy to Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          npm install -g heroku
+          heroku git:remote -a woowup-frontend
+          git remote set-url heroku https://oauth2:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/woowup-frontend.git
+          git push -f heroku main
