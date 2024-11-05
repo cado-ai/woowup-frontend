@@ -3,7 +3,7 @@ name: Deploy React App to Heroku
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build:
@@ -25,12 +25,31 @@ jobs:
 
       - name: Build project
         run: npm run build
+    
+      - name: List build directory
+        run: ls -la build
 
+      - name: Install Heroku CLI
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
+          echo "Heroku CLI installed"
+
+      - name: Prepare Heroku remote
+        env:
+            HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+            heroku git:remote -a woowup-frontend
+            git remote set-url heroku https://oauth2:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/woowup-frontend.git
+
+      - name: Configure Git
+        run: |
+              git config --global user.email "barcealex1014@github.com"
+              git config --global user.name "Alexander Merino"
+  
       - name: Deploy to Heroku
         env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+            HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
-          npm install -g heroku
-          heroku git:remote -a woowup-frontend
-          git remote set-url heroku https://oauth2:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/woowup-frontend.git
-          git push -f heroku main
+            git add -f build
+            git commit -m "Deploy to Heroku" || echo "No changes to commit"
+            git push heroku master

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './App.css';
 
 function App() {
-  const [email, setEmail] = useState('');
+  const [to, setTo] = useState('');
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [response, setResponse] = useState(null);
@@ -10,12 +10,12 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('https://tu-api.herokuapp.com/api/send', {
+      const res = await fetch('https://woowup-079b50bd940f.herokuapp.com/email/send-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, subject, message }),
+        body: JSON.stringify({ to, subject, message }),
       });
       const data = await res.json();
       setResponse(data.message);
@@ -26,13 +26,13 @@ function App() {
 
   return (
     <div className="App">
-      <h2>Formulario de Contacto</h2>
+      <h2>Formulario de Contacto para enviar comentarios</h2>
       <form onSubmit={handleSubmit}>
         <input
           type="email"
-          placeholder="Correo"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Correo electrónico"
+          value={to}
+          onChange={(e) => setTo(e.target.value)}
           required
         />
         <input
